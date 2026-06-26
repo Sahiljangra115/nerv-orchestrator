@@ -1,0 +1,15 @@
+# Core (Phases 0-5)
+pydantic>=2
+pyyaml
+requests        # or httpx, if you prefer async later
+
+# Test
+pytest
+
+# Image path (Phase 6) - heavy, install only when you reach it
+# torch
+# diffusers
+# accelerate
+
+# v2 Sakana search (Phase 7)
+# treequest

@@ -1,0 +1,28 @@
+# Model registry. Edit this to match the models you actually run.
+# Each entry: name, backend, tag, modality, specialties, (optional) default.
+#
+# - name:        human label used in the trace.
+# - backend:     "ollama" for text models, "diffusers" for image models.
+# - tag:         the Ollama model tag, or the diffusers model id.
+# - modality:    "text" or "image".
+# - specialties: subtask types this model is good at (see ALLOWED_TYPES in schema.py).
+# - default:     mark exactly one TEXT model true; it is the fallback when nothing matches.
+
+- name: coder
+  backend: ollama
+  tag: qwen2.5-coder:7b
+  modality: text
+  specialties: [code, debug]
+
+- name: general
+  backend: ollama
+  tag: gemma4:e2b
+  modality: text
+  specialties: [chat, summarize, explain, reason]
+  default: true
+
+- name: image
+  backend: diffusers
+  tag: stabilityai/sd-turbo
+  modality: image
+  specialties: [image]
