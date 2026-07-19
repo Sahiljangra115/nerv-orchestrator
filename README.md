@@ -21,9 +21,9 @@ pip install -r requirements.txt
 # In a separate terminal:
 ollama serve
 
-# Pull the two text models:
-ollama pull gemma4:e2b
-ollama pull qwen2.5-coder:7b
+# Pull the two text models (or edit models.yaml to match what you have):
+ollama pull gemma4:e2b     # general: planner, synth, chat/explain/reason
+ollama pull qwen3.5:4b     # coder: code/debug subtasks
 
 python -m pytest tests/
 python -m orchestrator "write a Python fibonacci function and explain its big-O"
@@ -33,27 +33,45 @@ python -m orchestrator "write a Python fibonacci function and explain its big-O"
 
 ## Example trace
 
+Real capture on this machine (planner/synth `gemma4:e2b`, coder `qwen3.5:4b`,
+CPU-bound). The planner split the query into a `debug` subtask (routed to the
+coder model) and an `explain` subtask (routed to the general model):
+
 ```
+$ python -m orchestrator "Debug this Python: def fib(n): return fib(n-1)+fib(n-2). Then explain why it fails."
+
 [planner] 2 subtasks
-[route] #0 code -> coder
+[route] #0 debug -> coder
 [route] #1 explain -> general
-[done]  #0 coder (4.2s)
-[done]  #1 general (3.8s)
+[done]  #0 coder (102.7s)
+[done]  #1 general (47.2s)
 [merge] synthesizing ...
 
 --- final ---
-Here is a Python fibonacci function and an explanation of its complexity:
+The function `def fib(n): return fib(n-1)+fib(n-2)` fails because it defines a
+recursive relationship without base cases, leading to infinite recursion and a
+RecursionError (stack overflow).
 
-def fib(n: int) -> int:
-    a, b = 0, 1
-    for _ in range(n):
-        a, b = b, a + b
-    return a
-
-**Time complexity:** O(n) — the loop runs exactly n times.
-**Space complexity:** O(1) — only two variables are kept in memory at once.
+## 1. Why the Original Code Fails
+The Fibonacci sequence needs base cases F(0)=0 and F(1)=1. Without them the
+calls stack up indefinitely until Python halts execution.
+...
+## 2. Corrected and Optimized Solutions
+def fib(n):
+    if n <= 0: return 0
+    if n == 1: return 1
+    return fib(n-1) + fib(n-2)
 ...
 ```
+
+> **Honest note on latency:** orchestration is 3 sequential LLM calls (2 subtasks
+> + 1 merge) vs. 1 for a raw single-model prompt. On CPU that is real overhead.
+> The routing payoff (a code-specialist model on the code subtask) only wins when
+> the specialist is genuinely better at that subtype. Whether it beats a single
+> model per task type is exactly what the [benchmark harness](#benchmark-harness)
+> is for. Also note the planner is only as good as its model: `gemma4:e2b` will
+> sometimes mislabel "write a function" as `chat` instead of `code`, which sends
+> it to the general model. Routing is only as sharp as the plan.
 
 ---
 

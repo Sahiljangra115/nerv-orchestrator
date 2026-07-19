@@ -10,7 +10,7 @@
 
 - name: coder
   backend: ollama
-  tag: qwen2.5-coder:7b
+  tag: qwen3.5:4b
   modality: text
   specialties: [code, debug]
 

@@ -50,4 +50,11 @@ def generate(
             f"Could not reach Ollama at {OLLAMA_URL} ({e.reason}). "
             "Is it running? Start it with `ollama serve`."
         ) from e
+    except TimeoutError as e:
+        # Read timeout: Ollama accepted the request but didn't respond in time.
+        # Common on the first call to a cold model (VRAM load). Not a URLError.
+        raise RuntimeError(
+            f"Ollama timed out after {timeout:.0f}s for model {model!r}. "
+            "A cold model can be slow on first load; retry, or raise the timeout."
+        ) from e
     return payload["response"]

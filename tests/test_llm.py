@@ -74,3 +74,14 @@ def test_url_error_mentions_ollama_serve(monkeypatch):
     monkeypatch.setattr(urllib.request, "urlopen", raise_url)
     with pytest.raises(RuntimeError, match="ollama serve"):
         generate("model", "hi")
+
+
+def test_timeout_error_is_friendly(monkeypatch):
+    # socket read timeout raises TimeoutError, which is NOT a URLError, so it
+    # must be caught separately or it escapes as a raw traceback.
+    def raise_timeout(*a, **kw):
+        raise TimeoutError("timed out")
+
+    monkeypatch.setattr(urllib.request, "urlopen", raise_timeout)
+    with pytest.raises(RuntimeError, match="timed out"):
+        generate("model", "hi")
