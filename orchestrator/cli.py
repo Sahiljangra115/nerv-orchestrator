@@ -11,35 +11,55 @@ Run with:  python -m orchestrator "your query here"
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
 
-from .registry import load_registry
+from .registry import load_registry, model_for_role
 from .planner import plan
 from .executor import execute
 from .synthesizer import synthesize
 
-# Which model drives planning and synthesis. Point these at a capable general
-# model you have pulled. TODO(gemini): consider reading these from models.yaml
-# (e.g. an entry flagged role: planner) instead of hardcoding.
-PLANNER_MODEL = "gemma4:e2b"
-SYNTH_MODEL = "gemma4:e2b"
-
 
 def main(argv: list[str] | None = None) -> int:
-    """
-    TODO(gemini):
-      - argparse: one positional `query`, optional --models PATH, optional --quiet.
-      - registry = load_registry(models_path)
-      - p = plan(query, PLANNER_MODEL); print "[planner] N subtasks".
-      - for each subtask, the executor will route+run; print a "[route] #id type -> model"
-        line per subtask (you can return routing info from execute or log inside it).
-      - results = execute(p, registry)
-      - print "[merge] synthesizing ...".
-      - final = synthesize(query, results, SYNTH_MODEL)
-      - print the final answer under a "--- final ---" header.
-      - return 0 on success, non-zero on error (and print a friendly message if
-        Ollama is not running).
-    """
-    raise NotImplementedError("TODO(gemini): wire the pipeline and print the trace")
+    """Wire planner -> executor -> synthesizer and stream the trace to stdout."""
+    parser = argparse.ArgumentParser(
+        prog="orchestrator",
+        description="Local LLM orchestrator: split, route, run, merge.",
+    )
+    parser.add_argument("query", help="the request to decompose and answer")
+    parser.add_argument("--models", type=Path, default=None, help="path to models.yaml")
+    parser.add_argument(
+        "--quiet", action="store_true", help="hide the trace, print only the answer"
+    )
+    parser.add_argument("--planner", default=None, help="override planner model tag")
+    parser.add_argument("--synth", default=None, help="override synthesizer model tag")
+    args = parser.parse_args(argv)
+
+    def trace(line: str) -> None:
+        if not args.quiet:
+            print(line)
+
+    try:
+        registry = load_registry(args.models)
+        planner_tag = args.planner or model_for_role(registry, "planner").tag
+        synth_tag = args.synth or model_for_role(registry, "synth").tag
+        p = plan(args.query, planner_tag)
+        trace(f"[planner] {len(p.subtasks)} subtasks")
+
+        def on_route(st, model):
+            trace(f"[route] #{st.id} {st.type} -> {model.name}")
+
+        results = execute(p, registry, on_route=on_route)
+        for r in results:
+            trace(f"[done]  #{r.subtask_id} {r.model_name} ({r.seconds:.1f}s)")
+        trace("[merge] synthesizing ...")
+        final = synthesize(args.query, results, synth_tag)
+    except RuntimeError as e:
+        print(f"error: {e}")
+        return 1
+
+    print("\n--- final ---")
+    print(final)
+    return 0
 
 
 if __name__ == "__main__":

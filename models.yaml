@@ -20,6 +20,7 @@
   modality: text
   specialties: [chat, summarize, explain, reason]
   default: true
+  roles: [planner, synth]
 
 - name: image
   backend: diffusers

@@ -23,15 +23,19 @@ from pieces.
 """
 
 
-def synthesize(query: str, results: list[Result], synth_model: str) -> str:
-    """
-    Produce the final answer from per-subtask results.
+def _is_image(output: str) -> bool:
+    # ponytail: Result has no modality field; image outputs are the only ones that
+    # are a path under outputs/. Good enough to tell text from image here.
+    return output.startswith("outputs/") or output.startswith("outputs\\")
 
-    TODO(gemini):
-      - if len(results) == 1 and it is text, return results[0].output unchanged
-        (no point paying for a merge).
-      - otherwise format each result (label image results as "[image saved at <path>]")
-        into `parts`, call llm.generate(synth_model, SYNTH_PROMPT.format(...)),
-        and return it.
-    """
-    raise NotImplementedError("TODO(gemini): merge results into one answer")
+
+def synthesize(query: str, results: list[Result], synth_model: str) -> str:
+    """Merge per-subtask results into one answer; skip the LLM for a lone text result."""
+    if len(results) == 1 and not _is_image(results[0].output):
+        return results[0].output
+    parts = []
+    for r in results:
+        body = f"[image saved at {r.output}]" if _is_image(r.output) else r.output
+        parts.append(f"- (from {r.model_name}):\n{body}")
+    prompt = SYNTH_PROMPT.format(query=query, parts="\n\n".join(parts))
+    return llm.generate(synth_model, prompt)

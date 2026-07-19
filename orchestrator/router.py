@@ -15,17 +15,16 @@ from .registry import candidates_for, default_text_model
 
 def route(subtask: Subtask, registry: list[ModelEntry]) -> ModelEntry:
     """
-    Choose the model entry that should run `subtask`.
-
-    TODO(gemini): rule-based selection:
-      1. pool = candidates_for(registry, subtask.modality)
-      2. if any entry in pool lists subtask.type in its `specialties`, return the
-         first such entry.
-      3. else if modality is 'text', return default_text_model(registry).
-      4. else (image modality, no match) return the first entry in pool, or raise
-         if pool is empty (no image model configured).
-
-    Keep it deterministic: same subtask + registry -> same choice. The test in
-    tests/test_router.py depends on this.
+    Choose the model entry that should run `subtask`. Rule-based and deterministic:
+    specialty match within the modality wins; else the default text model; else
+    (image, no match) the first image model.
     """
-    raise NotImplementedError("TODO(gemini): implement rule-based routing")
+    pool = candidates_for(registry, subtask.modality)
+    for m in pool:
+        if subtask.type in m.specialties:
+            return m
+    if subtask.modality == "text":
+        return default_text_model(registry)
+    if pool:
+        return pool[0]
+    raise RuntimeError(f"No model configured for modality {subtask.modality!r}")

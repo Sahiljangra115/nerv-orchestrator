@@ -11,13 +11,28 @@ from orchestrator.schema import ModelEntry, Subtask
 from orchestrator.router import route
 
 REGISTRY = [
-    ModelEntry(name="coder", backend="ollama", tag="qwen2.5-coder:7b",
-               modality="text", specialties=["code", "debug"]),
-    ModelEntry(name="general", backend="ollama", tag="gemma4:e2b",
-               modality="text", specialties=["chat", "summarize", "explain", "reason"],
-               default=True),
-    ModelEntry(name="image", backend="diffusers", tag="stabilityai/sd-turbo",
-               modality="image", specialties=["image"]),
+    ModelEntry(
+        name="coder",
+        backend="ollama",
+        tag="qwen2.5-coder:7b",
+        modality="text",
+        specialties=["code", "debug"],
+    ),
+    ModelEntry(
+        name="general",
+        backend="ollama",
+        tag="gemma4:e2b",
+        modality="text",
+        specialties=["chat", "summarize", "explain", "reason"],
+        default=True,
+    ),
+    ModelEntry(
+        name="image",
+        backend="diffusers",
+        tag="stabilityai/sd-turbo",
+        modality="image",
+        specialties=["image"],
+    ),
 ]
 
 

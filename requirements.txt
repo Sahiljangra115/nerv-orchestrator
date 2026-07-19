@@ -1,7 +1,7 @@
 # Core (Phases 0-5)
 pydantic>=2
 pyyaml
-requests        # or httpx, if you prefer async later
+# Ollama I/O uses the stdlib (urllib), so no requests/httpx needed for v1.
 
 # Test
 pytest
@@ -11,5 +11,6 @@ pytest
 # diffusers
 # accelerate
 
-# v2 Sakana search (Phase 7)
+# v2 Sakana search (Phase 7) - needs Python 3.11+. solve_hard falls back to a
+# single call if this isn't installed, so it stays optional.
 # treequest

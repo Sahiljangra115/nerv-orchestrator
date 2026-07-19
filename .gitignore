@@ -6,3 +6,5 @@ outputs/
 *.png
 .pytest_cache/
 .DS_Store
+.scratch/
+results/

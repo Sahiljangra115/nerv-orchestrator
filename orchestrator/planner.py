@@ -13,6 +13,8 @@ Build it in two stages while implementing:
 
 from __future__ import annotations
 
+from pydantic import ValidationError
+
 from . import llm
 from .schema import Plan, Subtask
 
@@ -41,19 +43,25 @@ User request:
 def plan(query: str, planner_model: str, retries: int = 2) -> Plan:
     """
     Decompose `query` into a validated Plan using the given Ollama model tag.
-
-    TODO(gemini):
-      - loop up to retries+1 times:
-          raw = llm.generate(planner_model, PLANNER_PROMPT.format(allowed=ALLOWED_TYPES, query=query), json=True)
-          try Plan.model_validate_json(raw) and return it on success.
-          on pydantic ValidationError, append the error text to the prompt/query
-          and try again ("your last output was invalid: ... fix it").
-      - if all attempts fail, return the single-subtask fallback below so the
-        system degrades instead of throwing.
+    Validate the JSON with Pydantic; on failure feed the error back and retry;
+    after all attempts fail, degrade to a single-subtask plan instead of crashing.
     """
-    raise NotImplementedError("TODO(gemini): implement validate+retry planning")
+    base = PLANNER_PROMPT.format(allowed=ALLOWED_TYPES, query=query)
+    prompt = base
+    for _ in range(retries + 1):
+        raw = llm.generate(planner_model, prompt, json=True)
+        try:
+            p = Plan.model_validate_json(raw)
+        except ValidationError as e:
+            prompt = f"{base}\n\nYour last reply was invalid for that schema:\n{e}\nReturn corrected JSON only."
+            continue
+        if p.subtasks:  # an empty plan is useless; treat it like a failure
+            return p
+    return _fallback(query)
 
 
 def _fallback(query: str) -> Plan:
     """Single-subtask plan used when the planner cannot produce valid JSON."""
-    return Plan(subtasks=[Subtask(id=0, type="chat", modality="text", instruction=query)])
+    return Plan(
+        subtasks=[Subtask(id=0, type="chat", modality="text", instruction=query)]
+    )

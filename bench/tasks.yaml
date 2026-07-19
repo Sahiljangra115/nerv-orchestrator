@@ -1,0 +1,65 @@
+# Benchmark task suite for NERV
+# Each entry has:
+#   prompt   – the query fed to the pipeline
+#   type     – the dominant subtask type (for per-type breakdown)
+# Run:  python -m bench run
+
+- prompt: "Write a Python function that checks if a string is a palindrome."
+  type: code
+
+- prompt: "Debug this Python snippet: def fib(n): return fib(n-1) + fib(n-2)"
+  type: debug
+
+- prompt: "Explain the difference between async/await and threads in Python."
+  type: explain
+
+- prompt: "Summarize the CAP theorem in three sentences."
+  type: summarize
+
+- prompt: "What is the time and space complexity of merge sort? Walk through each step."
+  type: reason
+
+- prompt: "Write a Python binary search function and explain its big-O complexity."
+  type: code
+
+- prompt: "Debug: my Flask route returns 404 even though the function is defined. Show common causes."
+  type: debug
+
+- prompt: "Explain what a transformer attention mechanism does in plain English."
+  type: explain
+
+- prompt: "Summarize the main differences between SQL and NoSQL databases."
+  type: summarize
+
+- prompt: "Reason through which sorting algorithm to choose for nearly-sorted data of 10 million elements."
+  type: reason
+
+- prompt: "Write a Python class implementing a stack with push, pop, and peek methods."
+  type: code
+
+- prompt: "Debug: Python raises 'RecursionError: maximum recursion depth exceeded'. What causes it and how to fix?"
+  type: debug
+
+- prompt: "Explain the difference between a process and a thread."
+  type: explain
+
+- prompt: "Summarize how HTTPS protects data in transit."
+  type: summarize
+
+- prompt: "Given an unsorted list of 1 million integers, reason through the best approach to find the median."
+  type: reason
+
+- prompt: "Write a Python decorator that caches function results (memoize)."
+  type: code
+
+- prompt: "Explain what a context manager is in Python and when to use one."
+  type: explain
+
+- prompt: "Summarize the key differences between REST and GraphQL APIs."
+  type: summarize
+
+- prompt: "Reason through when to use a set versus a list in Python for performance."
+  type: reason
+
+- prompt: "Write a Python function that flattens a nested list to arbitrary depth."
+  type: code

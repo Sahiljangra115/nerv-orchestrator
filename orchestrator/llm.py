@@ -10,25 +10,44 @@ Contract: a single `generate()` function. Synchronous is fine for v1.
 
 from __future__ import annotations
 
+import json as _json  # aliased so the `json` parameter below can keep its contract name
+import urllib.error
+import urllib.request
+
 OLLAMA_URL = "http://localhost:11434/api/generate"
 
 
-def generate(model: str, prompt: str, json: bool = False, timeout: float = 120.0) -> str:
+def generate(
+    model: str, prompt: str, json: bool = False, timeout: float = 120.0
+) -> str:
     """
     Run one prompt against one local model and return the text response.
 
-    TODO(gemini): implement with the stdlib or `requests`/`httpx`:
-      - POST to OLLAMA_URL with body:
-          {"model": model, "prompt": prompt, "stream": false}
-        and add "format": "json" to the body when `json=True`.
-      - parse the JSON response and return response["response"] (a str).
-      - on connection error, raise a clear RuntimeError telling the user
-        to start Ollama (`ollama serve`) and pull the model.
-      - respect `timeout`.
-
-    Notes:
-      - `model` is the Ollama tag, e.g. "qwen2.5-coder:7b", NOT the registry name.
-      - when json=True the caller will Pydantic-validate the string, so just
-        return it raw here; do not parse it into a dict.
+    `model` is the Ollama tag (e.g. "qwen2.5-coder:7b"), not the registry name.
+    When json=True we ask Ollama for JSON and return it raw; the caller validates.
     """
-    raise NotImplementedError("TODO(gemini): call Ollama and return the text response")
+    # ponytail: stdlib urllib does a plain POST fine, so no `requests` dependency.
+    body = {"model": model, "prompt": prompt, "stream": False}
+    if json:
+        body["format"] = "json"
+    req = urllib.request.Request(
+        OLLAMA_URL,
+        data=_json.dumps(body).encode(),
+        headers={"Content-Type": "application/json"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            payload = _json.loads(resp.read())
+    except urllib.error.HTTPError as e:
+        # Ollama IS reachable but rejected the request. A 404 here means the model
+        # tag isn't pulled. Catch this BEFORE URLError (HTTPError subclasses it).
+        raise RuntimeError(
+            f"Ollama returned HTTP {e.code} for model {model!r}. "
+            f"If it is not pulled yet, run: ollama pull {model}"
+        ) from e
+    except urllib.error.URLError as e:
+        raise RuntimeError(
+            f"Could not reach Ollama at {OLLAMA_URL} ({e.reason}). "
+            "Is it running? Start it with `ollama serve`."
+        ) from e
+    return payload["response"]
