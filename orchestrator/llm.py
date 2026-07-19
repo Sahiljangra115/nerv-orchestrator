@@ -18,7 +18,7 @@ OLLAMA_URL = "http://localhost:11434/api/generate"
 
 
 def generate(
-    model: str, prompt: str, json: bool = False, timeout: float = 120.0
+    model: str, prompt: str, json: bool = False, timeout: float = 300.0
 ) -> str:
     """
     Run one prompt against one local model and return the text response.

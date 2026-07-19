@@ -113,15 +113,29 @@ def cmd_run(args: argparse.Namespace) -> None:
 
     repeats = args.repeats
     print(f"Running {len(tasks)} tasks × {repeats} repeats each → {out_file}")
-    nerv_wins = baseline_wins = ties = 0
+    nerv_wins = baseline_wins = ties = errors = 0
 
     for i, task in enumerate(tasks, 1):
         query = task["prompt"]
         task_type = task.get("type", "unknown")
         print(f"  [{i}/{len(tasks)}] {task_type}: {query[:60]}...", end=" ", flush=True)
 
-        nerv_ans, nerv_s = _run_nerv(query, registry, planner_tag, synth_tag)
-        base_ans, base_s = _run_baseline(query, judge_tag)
+        # A single slow/failed model call must not abort a long unattended run:
+        # record the error for this task and move on.
+        try:
+            nerv_ans, nerv_s = _run_nerv(query, registry, planner_tag, synth_tag)
+            base_ans, base_s = _run_baseline(query, judge_tag)
+        except RuntimeError as e:
+            errors += 1
+            print(f"→ ERROR ({e})")
+            with out_file.open("a") as f:
+                f.write(
+                    json.dumps(
+                        {"task_type": task_type, "query": query, "error": str(e)}
+                    )
+                    + "\n"
+                )
+            continue
 
         votes = []
         for _ in range(repeats):
@@ -160,7 +174,8 @@ def cmd_run(args: argparse.Namespace) -> None:
 
     total = nerv_wins + baseline_wins + ties
     print(
-        f"\nResults: NERV {nerv_wins}/{total}  baseline {baseline_wins}/{total}  ties {ties}/{total}"
+        f"\nResults: NERV {nerv_wins}/{total}  baseline {baseline_wins}/{total}  "
+        f"ties {ties}/{total}  errors {errors}"
     )
     print(f"Saved to {out_file}")
 
@@ -182,7 +197,9 @@ def cmd_report(args: argparse.Namespace) -> None:
 
     for line in path.read_text().splitlines():
         r = json.loads(line)
-        w = r["winner"]
+        w = r.get("winner")
+        if w is None:  # error record, no winner
+            continue
         by_type[r["task_type"]][w] += 1
         totals[w] += 1
 
