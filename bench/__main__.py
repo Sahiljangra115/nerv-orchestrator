@@ -105,6 +105,8 @@ def cmd_run(args: argparse.Namespace) -> None:
     judge_tag = baseline_model.tag
 
     tasks = yaml.safe_load(TASKS_FILE.read_text())
+    if args.limit:
+        tasks = tasks[: args.limit]  # ponytail: CPU runs are slow; sample first N
     RESULTS_DIR.mkdir(exist_ok=True)
     ts = time.strftime("%Y%m%dT%H%M%S")
     out_file = RESULTS_DIR / f"{ts}.jsonl"
@@ -201,6 +203,9 @@ def main() -> None:
     run_p = sub.add_parser("run", help="Run all benchmark tasks")
     run_p.add_argument(
         "--repeats", type=int, default=3, help="Judge repeats per task (default 3)"
+    )
+    run_p.add_argument(
+        "--limit", type=int, default=0, help="Only run the first N tasks (0 = all)"
     )
     run_p.set_defaults(func=cmd_run)
 
