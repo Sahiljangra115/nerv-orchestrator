@@ -26,6 +26,17 @@ def generate(
     `model` is the Ollama tag (e.g. "qwen2.5-coder:7b"), not the registry name.
     When json=True we ask Ollama for JSON and return it raw; the caller validates.
     """
+    return generate_meta(model, prompt, json=json, timeout=timeout)["response"]
+
+
+def generate_meta(
+    model: str, prompt: str, json: bool = False, timeout: float = 300.0
+) -> dict:
+    """
+    Like generate() but return Ollama's whole payload: `response` plus timing and
+    token counts (`total_duration`, `load_duration`, `eval_count`, ... in ns).
+    The trainer's cost collection needs those numbers; nothing else should.
+    """
     # ponytail: stdlib urllib does a plain POST fine, so no `requests` dependency.
     body = {"model": model, "prompt": prompt, "stream": False}
     if json:
@@ -57,4 +68,4 @@ def generate(
             f"Ollama timed out after {timeout:.0f}s for model {model!r}. "
             "A cold model can be slow on first load; retry, or raise the timeout."
         ) from e
-    return payload["response"]
+    return payload

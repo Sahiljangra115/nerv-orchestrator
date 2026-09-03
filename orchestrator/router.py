@@ -1,10 +1,10 @@
 """
 Router: pick the best model for one subtask.
 
-v1 is deliberately dumb: match by modality, then by specialty tag, else fall back
-to the default text model. This is rule-based on purpose. The smart upgrades
-(embedding similarity, then a trained RouteLLM-style classifier) plug in HERE
-later without touching planner/executor.
+Rule-based and deterministic: a `model_hint` set by the trained cost-aware router
+(learned.py) wins if it names a model of the right modality; else match by
+specialty tag; else the default text model. The trained part lives in learned.py
+so this file stays a five-line lookup that tests can pin.
 """
 
 from __future__ import annotations
@@ -20,6 +20,10 @@ def route(subtask: Subtask, registry: list[ModelEntry]) -> ModelEntry:
     (image, no match) the first image model.
     """
     pool = candidates_for(registry, subtask.modality)
+    if subtask.model_hint:  # trained cost-aware pick wins when it names a real model
+        for m in pool:
+            if m.name == subtask.model_hint:
+                return m
     for m in pool:
         if subtask.type in m.specialties:
             return m

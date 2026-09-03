@@ -3,6 +3,10 @@ pydantic>=2
 pyyaml
 # Ollama I/O uses the stdlib (urllib), so no requests/httpx needed for v1.
 
+# Trained router (learned.py / trainer). MiniLM weights download on first use (~90MB).
+scikit-learn
+sentence-transformers
+
 # Test
 pytest
 

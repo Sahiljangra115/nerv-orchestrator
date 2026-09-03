@@ -1,0 +1,209 @@
+# Labelled seed questions for the trained router (type head) and the question
+# pool for cost collection. Add rows freely: more variety = better router.
+#   q     the question as a user would type it
+#   type  one of code / debug / explain / summarize / reason / chat
+# Retrain after editing: python -m trainer train
+
+# ---- code ----
+- {type: code, q: "Write a Python function that reverses a linked list."}
+- {type: code, q: "Implement binary search in JavaScript."}
+- {type: code, q: "Create a SQL query that returns the top 5 customers by total order value."}
+- {type: code, q: "Write a bash script that renames all .txt files in a folder to .md."}
+- {type: code, q: "Implement an LRU cache class in Python."}
+- {type: code, q: "Write a regex that matches valid email addresses."}
+- {type: code, q: "Give me a Go function that reads a file line by line."}
+- {type: code, q: "Write a React component that renders a paginated table."}
+- {type: code, q: "Implement quicksort in C."}
+- {type: code, q: "Write a Python script to download a URL and save it to disk."}
+- {type: code, q: "Create a Django model for a blog post with title, body, and tags."}
+- {type: code, q: "Write a function to check whether two strings are anagrams."}
+- {type: code, q: "Implement a thread-safe counter in Java."}
+- {type: code, q: "Write a Rust function that parses a CSV line into a Vec<String>."}
+- {type: code, q: "Code a FastAPI endpoint that accepts JSON and returns it uppercased."}
+- {type: code, q: "Write a Python generator that yields prime numbers."}
+- {type: code, q: "Implement Dijkstra's algorithm in Python."}
+- {type: code, q: "Write a TypeScript type guard for a User interface."}
+- {type: code, q: "Create a Dockerfile for a Flask app."}
+- {type: code, q: "Write a pytest unit test for a function that adds two numbers."}
+- {type: code, q: "Implement a stack using two queues."}
+- {type: code, q: "Write a Python class for a bank account with deposit and withdraw."}
+- {type: code, q: "Give me a one-liner to count word frequencies in a file."}
+- {type: code, q: "Write a CSS rule that centers a div horizontally and vertically."}
+- {type: code, q: "Implement merge sort in Python and return the sorted list."}
+- {type: code, q: "Write a function that converts a Roman numeral to an integer."}
+- {type: code, q: "Build a simple CLI in Python that adds two numbers passed as arguments."}
+- {type: code, q: "Write a shell command to find all files larger than 100MB."}
+- {type: code, q: "Implement a trie with insert and search methods."}
+- {type: code, q: "Write a Python decorator that retries a function three times on exception."}
+- {type: code, q: "Make me a function that validates an IPv4 address string."}
+- {type: code, q: "Code up a countdown timer in JavaScript that updates every second."}
+
+# ---- debug ----
+- {type: debug, q: "Why does my Python code throw \"TypeError: 'NoneType' object is not subscriptable\"?"}
+- {type: debug, q: "My React component re-renders infinitely inside useEffect. What is wrong?"}
+- {type: debug, q: "This SQL query returns duplicate rows, how do I fix it? SELECT a.id, b.name FROM a JOIN b ON a.id = b.a_id"}
+- {type: debug, q: "Fix this: for i in range(10) print(i)"}
+- {type: debug, q: "I get \"ModuleNotFoundError: No module named 'requests'\" even though I installed it."}
+- {type: debug, q: "My Docker container exits immediately after starting. How do I debug that?"}
+- {type: debug, q: "Segmentation fault in my C program when I free a pointer twice. What is happening?"}
+- {type: debug, q: "The API returns 401 even with a valid token. What should I check?"}
+- {type: debug, q: "Why is this JavaScript printing undefined? const x = obj.data.value"}
+- {type: debug, q: "git push is rejected with \"non-fast-forward\". How do I resolve it?"}
+- {type: debug, q: "My Flask app says \"Address already in use\" on port 5000."}
+- {type: debug, q: "This regex never matches: ^\\d{3}-\\d{4}$ against \"123-4567 \". Why?"}
+- {type: debug, q: "Debug this function: def avg(xs): return sum(xs) / len(xs) when xs is empty."}
+- {type: debug, q: "pip install fails with \"error: externally-managed-environment\"."}
+- {type: debug, q: "Why does my async function return a coroutine object instead of the result?"}
+- {type: debug, q: "Java throws NullPointerException on a field I initialized in the constructor."}
+- {type: debug, q: "My CSS flexbox items overflow the container instead of wrapping."}
+- {type: debug, q: "Node says \"Cannot find module\" for a file that exists. What is wrong with the path?"}
+- {type: debug, q: "This loop never terminates: while n != 1: n = n // 2"}
+- {type: debug, q: "CUDA out of memory error when training my model, how to fix it?"}
+- {type: debug, q: "The unit test passes locally but fails in CI with a timezone difference."}
+- {type: debug, q: "Why does my Python list mutate when I modify a copy? b = a; b.append(1)"}
+- {type: debug, q: "My Rust code fails to compile with \"borrowed value does not live long enough\"."}
+- {type: debug, q: "Fix the off-by-one in: for (int i = 0; i <= arr.length; i++)"}
+- {type: debug, q: "My cron job never runs but works when I execute it manually."}
+- {type: debug, q: "Fix this traceback: KeyError: 'user_id' in my Django view."}
+- {type: debug, q: "Why is my Pandas merge producing NaN values in every row?"}
+- {type: debug, q: "The website loads blank and the console says \"Uncaught SyntaxError: Unexpected token <\"."}
+- {type: debug, q: "My recursive function hits \"maximum recursion depth exceeded\". What is the bug?"}
+- {type: debug, q: "SSH connection refused on port 22 after a reboot, what should I check?"}
+- {type: debug, q: "Something is wrong with this code, it prints 55 instead of 10: total = 0; for i in range(11): total += i"}
+- {type: debug, q: "My program crashes with a stack overflow, here is the function: int f(int n) { return f(n - 1); }"}
+
+# ---- explain ----
+- {type: explain, q: "Explain how garbage collection works in Java."}
+- {type: explain, q: "What is the difference between TCP and UDP?"}
+- {type: explain, q: "How does a hash map achieve O(1) lookups?"}
+- {type: explain, q: "Explain the concept of closures in JavaScript."}
+- {type: explain, q: "What does the CAP theorem say?"}
+- {type: explain, q: "Explain what Docker containers are and how they differ from virtual machines."}
+- {type: explain, q: "How does public key cryptography work?"}
+- {type: explain, q: "What is a race condition?"}
+- {type: explain, q: "Explain the difference between a compiler and an interpreter."}
+- {type: explain, q: "What is dependency injection and why use it?"}
+- {type: explain, q: "Explain how DNS resolution works step by step."}
+- {type: explain, q: "What is the difference between a mutex and a semaphore?"}
+- {type: explain, q: "Explain what an index does in a relational database."}
+- {type: explain, q: "How do transformers use attention in language models?"}
+- {type: explain, q: "What is the event loop in Node.js?"}
+- {type: explain, q: "Explain gradient descent in plain English."}
+- {type: explain, q: "What is the difference between REST and gRPC?"}
+- {type: explain, q: "Explain what a monad is without category theory jargon."}
+- {type: explain, q: "How does git rebase differ from git merge?"}
+- {type: explain, q: "What is memoization?"}
+- {type: explain, q: "Explain big-O notation with an example."}
+- {type: explain, q: "What happens when I type a URL into a browser?"}
+- {type: explain, q: "Explain the difference between processes and threads."}
+- {type: explain, q: "What is a foreign key?"}
+- {type: explain, q: "How does HTTPS keep data secure?"}
+- {type: explain, q: "Explain what a virtual environment is in Python."}
+- {type: explain, q: "What is the difference between stack and heap memory?"}
+- {type: explain, q: "Explain how a load balancer works."}
+- {type: explain, q: "What are WebSockets and when should I use them?"}
+- {type: explain, q: "Explain eventual consistency."}
+- {type: explain, q: "How do neural networks learn, in simple terms?"}
+- {type: explain, q: "What is the purpose of a message queue like Kafka?"}
+
+# ---- summarize ----
+- {type: summarize, q: "Summarize the plot of Romeo and Juliet in three sentences."}
+- {type: summarize, q: "Give me a TL;DR of the GDPR."}
+- {type: summarize, q: "Summarize the following paragraph: Mitochondria produce most of the cell's ATP through cellular respiration, they have their own DNA, and they are inherited from the mother."}
+- {type: summarize, q: "Condense these meeting notes into five bullet points: we agreed to ship on Friday, QA needs two more days, marketing wants a blog post, and the budget is approved."}
+- {type: summarize, q: "Summarize the key ideas of the Agile manifesto."}
+- {type: summarize, q: "Give me the main points of the theory of evolution in a short paragraph."}
+- {type: summarize, q: "Summarize what the Python GIL is in two sentences."}
+- {type: summarize, q: "TL;DR the differences between Python 2 and Python 3."}
+- {type: summarize, q: "Summarize the history of the internet in under 100 words."}
+- {type: summarize, q: "Boil this down to one sentence: Our Q3 revenue grew 12% year over year, driven mostly by enterprise subscriptions, while churn stayed flat at 3%."}
+- {type: summarize, q: "Summarize the main arguments for and against nuclear energy."}
+- {type: summarize, q: "Give me a short summary of how vaccines work."}
+- {type: summarize, q: "Summarize the book Clean Code in five bullet points."}
+- {type: summarize, q: "What are the key takeaways from the Twelve-Factor App methodology?"}
+- {type: summarize, q: "Summarize this commit message: Refactor auth middleware to use async handlers, drop legacy session cookie path, add tests for token refresh."}
+- {type: summarize, q: "Write an abstract-style summary of the SOLID principles."}
+- {type: summarize, q: "Summarize the rules of chess in a paragraph."}
+- {type: summarize, q: "Give me a one-paragraph recap of World War I."}
+- {type: summarize, q: "Summarize the pros and cons of microservices."}
+- {type: summarize, q: "Condense the following into a headline: Scientists discovered a new species of frog in the Amazon that glows under UV light."}
+- {type: summarize, q: "Summarize the OSI model layers in one line each."}
+- {type: summarize, q: "TL;DR of the Kubernetes architecture."}
+- {type: summarize, q: "Summarize what a 401(k) is for someone with no finance background."}
+- {type: summarize, q: "Give me the executive summary of why we should adopt TypeScript."}
+- {type: summarize, q: "Summarize the main causes of the 2008 financial crisis."}
+- {type: summarize, q: "In three bullets, summarize how photosynthesis works."}
+- {type: summarize, q: "Summarize the differences between Java and Kotlin."}
+- {type: summarize, q: "Give me a quick recap of what happens in the first Harry Potter book."}
+- {type: summarize, q: "Summarize this error log into one sentence: connection timeout at 10:01, retry at 10:02 failed, service restarted at 10:05, healthy since."}
+- {type: summarize, q: "Reduce this to key points: The new policy requires two-factor authentication for all employees, rotates passwords every 90 days, and bans shared accounts."}
+- {type: summarize, q: "Shorten this to a tweet: We are launching a new dashboard next week with real-time metrics, custom alerts, and a redesigned onboarding flow for new users."}
+- {type: summarize, q: "Give me the gist of the Bitcoin whitepaper."}
+
+# ---- reason ----
+- {type: reason, q: "If a train leaves at 3pm going 60 mph and another leaves at 4pm going 80 mph, when does the second catch up?"}
+- {type: reason, q: "Should I use PostgreSQL or MongoDB for a social network feed? Reason through the tradeoffs."}
+- {type: reason, q: "I have 3 red and 5 blue balls. What is the probability of drawing two blue in a row without replacement?"}
+- {type: reason, q: "Which is cheaper over five years: buying a car for $30k or leasing at $400 a month? Show the reasoning."}
+- {type: reason, q: "Reason through whether a monolith or microservices fits a three-person startup."}
+- {type: reason, q: "A farmer has 17 sheep and all but 9 die. How many are left? Explain your reasoning."}
+- {type: reason, q: "Estimate how many piano tuners there are in Chicago."}
+- {type: reason, q: "Which sorting algorithm should I use for 10 million nearly sorted integers, and why?"}
+- {type: reason, q: "Is it better to index this column or add a cache layer? Walk through the decision."}
+- {type: reason, q: "If I double the number of servers, will my latency halve? Think it through."}
+- {type: reason, q: "Three boxes are labeled apples, oranges, and mixed, all incorrectly. You can pick one fruit from one box. How do you relabel them correctly?"}
+- {type: reason, q: "Reason about whether it is worth rewriting our Python service in Go for performance."}
+- {type: reason, q: "Given a budget of 4GB VRAM, which model size can I realistically run locally? Work it out."}
+- {type: reason, q: "Should I pay off my student loan early or invest the money? Reason step by step."}
+- {type: reason, q: "What is the time complexity of nested loops where the inner loop runs i times? Derive it."}
+- {type: reason, q: "Work out whether a 5% raise beats a $3,000 bonus on a $50,000 salary over three years."}
+- {type: reason, q: "Reason through whether a linked list or an array is better for a queue with frequent inserts at both ends."}
+- {type: reason, q: "Two coins add up to 30 cents and one of them is not a nickel. What are they?"}
+- {type: reason, q: "Decide between threads and asyncio for a scraper hitting 1,000 URLs. Justify it."}
+- {type: reason, q: "If the median of a dataset is higher than the mean, what does that imply about its skew?"}
+- {type: reason, q: "Think through why a hash table would perform badly with a constant hash function."}
+- {type: reason, q: "Plan the fastest way to find a duplicate in an array of n+1 integers in range 1..n."}
+- {type: reason, q: "Is it rational to buy insurance with a negative expected value? Argue both sides."}
+- {type: reason, q: "How many bits do I need to represent 1 million distinct IDs? Show the math."}
+- {type: reason, q: "Reason about whether adding more RAM or a faster SSD helps a database more."}
+- {type: reason, q: "Compare the long-term cost of a serverless function versus a small VM for 1 million requests a month."}
+- {type: reason, q: "A bat and a ball cost $1.10 and the bat costs $1 more than the ball. What does the ball cost? Explain."}
+- {type: reason, q: "Determine whether this schedule is feasible: three tasks needing 2, 3, and 4 hours on two machines in 5 hours."}
+- {type: reason, q: "Which caching strategy makes sense for data that changes every minute but is read thousands of times a second?"}
+- {type: reason, q: "Weigh the tradeoffs of storing timestamps as UTC versus local time."}
+- {type: reason, q: "If it takes 5 machines 5 minutes to make 5 widgets, how long do 100 machines take to make 100 widgets?"}
+- {type: reason, q: "Argue whether we should shard the database now or wait until we hit 10 million rows."}
+
+# ---- chat ----
+- {type: chat, q: "Hi, how are you today?"}
+- {type: chat, q: "Tell me a joke about programmers."}
+- {type: chat, q: "What is your name?"}
+- {type: chat, q: "Good morning!"}
+- {type: chat, q: "Can you recommend a good sci-fi book?"}
+- {type: chat, q: "Thanks, that was helpful."}
+- {type: chat, q: "What's the capital of France?"}
+- {type: chat, q: "Do you like music?"}
+- {type: chat, q: "I'm bored, entertain me."}
+- {type: chat, q: "What should I have for dinner tonight?"}
+- {type: chat, q: "Say something motivational."}
+- {type: chat, q: "Who won the football world cup in 2018?"}
+- {type: chat, q: "Translate \"good night\" into Spanish."}
+- {type: chat, q: "Write a haiku about autumn."}
+- {type: chat, q: "What day of the week is it?"}
+- {type: chat, q: "Give me a fun fact about octopuses."}
+- {type: chat, q: "How tall is Mount Everest?"}
+- {type: chat, q: "Can you help me?"}
+- {type: chat, q: "Suggest a name for my new puppy."}
+- {type: chat, q: "What is 15 times 12?"}
+- {type: chat, q: "Tell me about yourself."}
+- {type: chat, q: "Any tips for staying focused while studying?"}
+- {type: chat, q: "Recommend a movie for a rainy evening."}
+- {type: chat, q: "Hello! Nice to meet you."}
+- {type: chat, q: "What's the weather usually like in Tokyo in April?"}
+- {type: chat, q: "Write a short birthday message for my sister."}
+- {type: chat, q: "Which is bigger, a lion or a tiger?"}
+- {type: chat, q: "Cheer me up."}
+- {type: chat, q: "What are some hobbies I could try this weekend?"}
+- {type: chat, q: "Okay, sounds good, bye!"}
+- {type: chat, q: "Pick a random number between 1 and 10."}
+- {type: chat, q: "Do you think pineapple belongs on pizza?"}

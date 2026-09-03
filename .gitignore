@@ -8,3 +8,4 @@ outputs/
 .DS_Store
 .scratch/
 results/
+router.pkl

@@ -52,14 +52,19 @@ Answer B:
 
 
 def _run_nerv(
-    query: str, registry, planner_model_tag: str, synth_model_tag: str
+    query: str,
+    registry,
+    planner_model_tag: str,
+    synth_model_tag: str,
+    learned_plan: bool = False,
 ) -> tuple[str, float]:
+    from orchestrator import learned
     from orchestrator.planner import plan
     from orchestrator.executor import execute
     from orchestrator.synthesizer import synthesize
 
     start = time.perf_counter()
-    p = plan(query, planner_model_tag)
+    p = learned.plan(query) if learned_plan else plan(query, planner_model_tag)
     results = execute(p, registry)
     answer = synthesize(query, results, synth_model_tag)
     return answer, time.perf_counter() - start
@@ -104,6 +109,13 @@ def cmd_run(args: argparse.Namespace) -> None:
     )  # same capable model for baseline
     judge_tag = baseline_model.tag
 
+    from orchestrator import learned
+
+    use_learned = args.planner == "learned" or (
+        args.planner == "auto" and learned.available()
+    )
+    print(f"planner: {'learned (router.pkl)' if use_learned else 'llm'}")
+
     tasks = yaml.safe_load(TASKS_FILE.read_text())
     if args.limit:
         tasks = tasks[: args.limit]  # ponytail: CPU runs are slow; sample first N
@@ -123,7 +135,9 @@ def cmd_run(args: argparse.Namespace) -> None:
         # A single slow/failed model call must not abort a long unattended run:
         # record the error for this task and move on.
         try:
-            nerv_ans, nerv_s = _run_nerv(query, registry, planner_tag, synth_tag)
+            nerv_ans, nerv_s = _run_nerv(
+                query, registry, planner_tag, synth_tag, learned_plan=use_learned
+            )
             base_ans, base_s = _run_baseline(query, judge_tag)
         except RuntimeError as e:
             errors += 1
@@ -161,6 +175,7 @@ def cmd_run(args: argparse.Namespace) -> None:
 
         record = {
             "task_type": task_type,
+            "planner": "learned" if use_learned else "llm",
             "query": query,
             "nerv_answer": nerv_ans,
             "nerv_seconds": round(nerv_s, 2),
@@ -223,6 +238,12 @@ def main() -> None:
     )
     run_p.add_argument(
         "--limit", type=int, default=0, help="Only run the first N tasks (0 = all)"
+    )
+    run_p.add_argument(
+        "--planner",
+        choices=["auto", "learned", "llm"],
+        default="auto",
+        help="auto = trained router if router.pkl exists, else LLM planner",
     )
     run_p.set_defaults(func=cmd_run)
 

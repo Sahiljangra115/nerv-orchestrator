@@ -11,8 +11,10 @@ Run with:  python -m orchestrator "your query here"
 from __future__ import annotations
 
 import argparse
+import time
 from pathlib import Path
 
+from . import learned
 from .registry import load_registry, model_for_role
 from .planner import plan
 from .executor import execute
@@ -32,6 +34,11 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--planner", default=None, help="override planner model tag")
     parser.add_argument("--synth", default=None, help="override synthesizer model tag")
+    parser.add_argument(
+        "--llm-plan",
+        action="store_true",
+        help="use the LLM planner even when a trained router.pkl exists",
+    )
     args = parser.parse_args(argv)
 
     def trace(line: str) -> None:
@@ -42,11 +49,18 @@ def main(argv: list[str] | None = None) -> int:
         registry = load_registry(args.models)
         planner_tag = args.planner or model_for_role(registry, "planner").tag
         synth_tag = args.synth or model_for_role(registry, "synth").tag
-        p = plan(args.query, planner_tag)
-        trace(f"[planner] {len(p.subtasks)} subtasks")
+        if args.llm_plan or not learned.available():
+            p = plan(args.query, planner_tag)
+            trace(f"[planner] llm {len(p.subtasks)} subtasks")
+        else:
+            start = time.perf_counter()
+            p = learned.plan(args.query)
+            ms = (time.perf_counter() - start) * 1000
+            trace(f"[planner] learned {len(p.subtasks)} subtasks ({ms:.0f}ms)")
 
         def on_route(st, model):
-            trace(f"[route] #{st.id} {st.type} -> {model.name}")
+            how = " (cost)" if st.model_hint else ""
+            trace(f"[route] #{st.id} {st.type} -> {model.name}{how}")
 
         results = execute(p, registry, on_route=on_route)
         for r in results:

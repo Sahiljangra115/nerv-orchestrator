@@ -33,6 +33,9 @@ class Subtask(BaseModel):
     hard: bool = (
         False  # if True, executor may use the v2 search loop instead of a single call
     )
+    # Registry model *name* chosen by the trained cost-aware router (learned.py).
+    # None means "route by type". The rule router honours a hint that exists.
+    model_hint: str | None = None
 
 
 class Plan(BaseModel):
